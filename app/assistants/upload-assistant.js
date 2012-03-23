@@ -4,7 +4,7 @@ function UploadAssistant(arg) {
        to the scene controller (this.controller) has not be established yet, so any initialization
        that needs the scene controller should be done in the setup function below. */
        this.launchParams = arg;
-       Mojo.Log.error("arg: "+JSON.stringify(arg));
+       Mojo.Log.info("arg: "+JSON.stringify(arg));
       
 }
 var img_to_send_path = "";
@@ -30,7 +30,7 @@ UploadAssistant.prototype.eBTNSelect = function(){
 UploadAssistant.prototype.nullInputUpdate = function(){
     Mojo.Log.error("NULL input.");
     upload_processing = 0;
-    this.controller.get('id_send_status').mojo.deactivate();
+    // this.controller.get('id_send_status').mojo.deactivate();
     this.controller.showAlertDialog({
         //onChoose: function(value) {this.controller.get("area-to-update").innerText = "Alert result = " + value;},
         title: $L("出错！"),
@@ -66,7 +66,7 @@ UploadAssistant.prototype.updateStatusToFanfou = function(status){
     {
         Mojo.Log.error("Can't update status without input.");
         upload_processing = 0;
-        this.controller.get('id_send_status').mojo.deactivate();
+        // this.controller.get('id_send_status').mojo.deactivate();
         return false;
     }
     try {
@@ -76,7 +76,7 @@ UploadAssistant.prototype.updateStatusToFanfou = function(status){
     } catch (Error) {
                         Mojo.Log.error(Error);
                         upload_processing = 0;
-                        this.controller.get('id_send_status').mojo.deactivate();
+                        // this.controller.get('id_send_status').mojo.deactivate();
                         return false;
                     }
     if(DB)
@@ -128,7 +128,7 @@ UploadAssistant.prototype.updateStatusToFanfou = function(status){
                  // TODO 重新获取access_token,access_secret
                  Mojo.Log.error("Bug! Failed to get access_token and access_secret.");
                  upload_processing = 0;
-                 this.controller.get('id_send_status').mojo.deactivate();
+                 // this.controller.get('id_send_status').mojo.deactivate();
                  return false;
              }
           }
@@ -137,7 +137,7 @@ UploadAssistant.prototype.updateStatusToFanfou = function(status){
              result = future.exception;
              Mojo.Log.error("find failure: Err code=" + result.errorCode + "Err message=" + result.message);
              upload_processing = 0;
-             this.controller.get('id_send_status').mojo.deactivate(); 
+             // this.controller.get('id_send_status').mojo.deactivate(); 
              return false;
           }
         }.bind(this));
@@ -146,7 +146,7 @@ UploadAssistant.prototype.updateStatusToFanfou = function(status){
     {
         Mojo.Log.error("Failed to get DB8 instance.");
         upload_processing = 0;
-        this.controller.get('id_send_status').mojo.deactivate();
+        // this.controller.get('id_send_status').mojo.deactivate();
         return false;
     }
     return true;
@@ -154,19 +154,20 @@ UploadAssistant.prototype.updateStatusToFanfou = function(status){
 
 UploadAssistant.prototype.cbGetAccessParamsSuccess = function(msg) {
     upload_processing = 0;
-    this.controller.get('id_send_status').mojo.deactivate();
+    // this.controller.get('id_send_status').mojo.deactivate();
     Mojo.Log.info( "Update status successfully.\nReturn is: "+JSON.stringify(msg) );
-    this.controller.showAlertDialog({
-        //onChoose: function(value) {this.controller.get("area-to-update").innerText = "Alert result = " + value;},
-        title: $L("发送成功！"),
-        //message: $L("发送成功！"),
-        choices:[
-             // {label:$L('Rare'), value:"refresh", type:'affirmative'},  
-             // {label:$L("Medium"), value:"don't refresh"},
-             // {label:$L("Overcooked"), value:"don't refresh", type:'negative'},    
-             {label:$L("返回"), value:"maybe refresh", type:'dismiss'}    
-        ]
-        });
+    // this.controller.showAlertDialog({
+        // //onChoose: function(value) {this.controller.get("area-to-update").innerText = "Alert result = " + value;},
+        // title: $L("发送成功！"),
+        // //message: $L("发送成功！"),
+        // choices:[
+             // // {label:$L('Rare'), value:"refresh", type:'affirmative'},  
+             // // {label:$L("Medium"), value:"don't refresh"},
+             // // {label:$L("Overcooked"), value:"don't refresh", type:'negative'},    
+             // {label:$L("返回"), value:"maybe refresh", type:'dismiss'}    
+        // ]
+        // });
+    Mojo.Controller.getAppController().showBanner("发送成功！",{source: 'notification'});
 }
 
 
@@ -175,7 +176,7 @@ UploadAssistant.prototype.cbGetAccessParamsSuccess = function(msg) {
  */
 UploadAssistant.prototype.cbGetAccessParamsError = function(msg) {
     upload_processing = 0;
-    this.controller.get('id_send_status').mojo.deactivate();
+    // this.controller.get('id_send_status').mojo.deactivate();
     Mojo.Log.error( "Failed to update status.\nReturn is: "+JSON.stringify(msg) );
     this.controller.showAlertDialog({
         //onChoose: function(value) {this.controller.get("area-to-update").innerText = "Alert result = " + value;},
@@ -196,7 +197,7 @@ UploadAssistant.prototype.uploadPicToFanfou = function(file_path, status)
     {
         Mojo.Log.error("Can't upload without file path.");
         upload_processing = 0;
-        this.controller.get('id_send_status').mojo.deactivate();
+        // this.controller.get('id_send_status').mojo.deactivate();
         return false;
     }
     try {
@@ -206,7 +207,7 @@ UploadAssistant.prototype.uploadPicToFanfou = function(file_path, status)
     } catch (Error) {
                         Mojo.Log.error(Error);
                         upload_processing = 0;
-                        this.controller.get('id_send_status').mojo.deactivate();
+                        // this.controller.get('id_send_status').mojo.deactivate();
                         return false;
                     }
     if(DB)
@@ -268,7 +269,7 @@ UploadAssistant.prototype.uploadPicToFanfou = function(file_path, status)
                           if(e.httpCode == 200)
                           {
                               upload_processing = 0;
-                              this.controller.get('id_send_status').mojo.deactivate(); 
+                              // this.controller.get('id_send_status').mojo.deactivate(); 
                               //Mojo.Log.info( "Upload pic successfully.\nReturn is: "+JSON.stringify(e) );
                               this.controller.showAlertDialog({
                                   //onChoose: function(value) {this.controller.get("area-to-update").innerText = "Alert result = " + value;},
@@ -287,7 +288,7 @@ UploadAssistant.prototype.uploadPicToFanfou = function(file_path, status)
                           Mojo.Log.error("Upload failure, results="+JSON.stringify(e));
                           //this.controller.get('selection').innerHTML = "Upload failure, results="+JSON.stringify(e);
                           upload_processing = 0;
-                          this.controller.get('id_send_status').mojo.deactivate();
+                          // this.controller.get('id_send_status').mojo.deactivate();
                           //Mojo.Log.error( "Failed to update status.\nReturn is: "+JSON.stringify(msg) );
                           this.controller.showAlertDialog({
                               //onChoose: function(value) {this.controller.get("area-to-update").innerText = "Alert result = " + value;},
@@ -308,7 +309,7 @@ UploadAssistant.prototype.uploadPicToFanfou = function(file_path, status)
                  // TODO 重新获取access_token,access_secret
                  Mojo.Log.error("Bug! Failed to get access_token and access_secret.");
                  upload_processing = 0;
-                 this.controller.get('id_send_status').mojo.deactivate();
+                 // this.controller.get('id_send_status').mojo.deactivate();
                  return false;
              }
          }
@@ -317,7 +318,7 @@ UploadAssistant.prototype.uploadPicToFanfou = function(file_path, status)
              result = future.exception;
              Mojo.Log.error("find failure: Err code=" + result.errorCode + "Err message=" + result.message); 
              upload_processing = 0;
-             this.controller.get('id_send_status').mojo.deactivate();
+             // this.controller.get('id_send_status').mojo.deactivate();
              return false;
           }
         }.bind(this));
@@ -326,7 +327,7 @@ UploadAssistant.prototype.uploadPicToFanfou = function(file_path, status)
     {
         Mojo.Log.error("Failed to get DB8 instance.");
         upload_processing = 0;
-        this.controller.get('id_send_status').mojo.deactivate();
+        // this.controller.get('id_send_status').mojo.deactivate();
         return false;
     }
     
@@ -337,27 +338,27 @@ UploadAssistant.prototype.setup = function() {
     // Set up a few models so we can test setting the widget model:
     //Mojo.Log.error("Enter upload scene");
     upload_processing = 0;
-    this.controller.setupWidget("id_select_img",
-         {
-            type : Mojo.Widget.defaultButton
-          },
-         {
-            label : "选择一张图片...",
-            disabled: false
-         }
-     );
-     Mojo.Event.listen(this.controller.get('id_select_img'),Mojo.Event.tap, this.eBTNSelect.bind(this));
+    // this.controller.setupWidget("id_select_img",
+         // {
+            // type : Mojo.Widget.defaultButton
+          // },
+         // {
+            // label : "选择一张图片...",
+            // disabled: false
+         // }
+     // );
+     // Mojo.Event.listen(this.controller.get('id_select_img'),Mojo.Event.tap, this.eBTNSelect.bind(this));
      
-     this.controller.setupWidget("id_send_status",
-         {
-            type : Mojo.Widget.activityButton
-          },
-         {
-            label : "发送",
-            disabled: false
-         }
-     );
-     Mojo.Event.listen(this.controller.get('id_send_status'),Mojo.Event.tap, this.eBTNSend.bind(this));
+     // this.controller.setupWidget("id_send_status",
+         // {
+            // type : Mojo.Widget.activityButton
+          // },
+         // {
+            // label : "发送",
+            // disabled: false
+         // }
+     // );
+     // Mojo.Event.listen(this.controller.get('id_send_status'),Mojo.Event.tap, this.eBTNSend.bind(this));
      
      /* 初始化用户名输入框 */
      var attributes = {
@@ -380,26 +381,55 @@ UploadAssistant.prototype.setup = function() {
     };
     if(this.launchParams.status != undefined)
     {
-        this.model = {
+        this.textModel = {
             'original' : this.launchParams.status,
             disabled: false
         };
     }
     else
     {
-        this.model = {
+        this.textModel = {
             'original' : "",
             disabled: false
         };
     }
-
-    this.controller.setupWidget('textField', attributes, this.model);
+    this.controller.setupWidget('textField', attributes, this.textModel);
     
+    // 设置提示标题
     this.controller.get("id_title").innerText = "你在做什么？";
-    
-
+    // 设置标题栏
+    this.controller.get("id_main_hdr").innerText = "更新状态";
+    // 初始化发送和添加图片按钮
+	this.controller.setupWidget(Mojo.Menu.commandMenu, undefined, 
+    {
+        items:	[
+            { label: 'button_attach', command: 'cmd_attach', icon: 'attach' },
+            { label: 'button_send', command: 'cmd_send',icon: 'send' }
+        ]
+    });
 }
 
+UploadAssistant.prototype.handleCommand = function(event) {
+	if(event.type == Mojo.Event.command) {
+		switch(event.command)
+		{
+			case 'cmd_attach':
+				//this.controller.get('message').innerText = ('menu button 1 pressed')
+				Mojo.Log.info("cmd_attach");
+				this.eBTNSelect();
+			break;
+			case 'cmd_send':
+				//this.controller.get('message').innerText = ('menu button 2 pressed')Mojo.Log.error("cmd-1");
+				Mojo.Log.info("cmd_send");
+				this.eBTNSend();
+			break;
+			default:
+				//Mojo.Controller.errorDialog("Got command " + event.command);
+				Mojo.Log.error("default");
+			break;
+		}
+	}
+}
 UploadAssistant.prototype.activate = function(event) {
     /* put in event handlers here that should only be in effect when this scene is active. For
        example, key handlers that are observing the document */
@@ -413,6 +443,6 @@ UploadAssistant.prototype.deactivate = function(event) {
 UploadAssistant.prototype.cleanup = function(event) {
     /* this function should do any cleanup needed before the scene is destroyed as 
        a result of being popped off the scene stack */
-      Mojo.Event.stopListening(this.controller.get('id_select_img'),Mojo.Event.tap, this.eBTNSelect.bind(this));
-      Mojo.Event.stopListening(this.controller.get('id_select_img'),Mojo.Event.tap, this.eBTNSend.bind(this));
+      // Mojo.Event.stopListening(this.controller.get('id_select_img'),Mojo.Event.tap, this.eBTNSelect.bind(this));
+      // Mojo.Event.stopListening(this.controller.get('id_select_img'),Mojo.Event.tap, this.eBTNSend.bind(this));
 };
