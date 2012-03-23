@@ -87,6 +87,8 @@ FirstAssistant.prototype.checkAccessExist = function() {
        Mojo.Log.info("Authorization putKind failure: Err code=" + result.errorCode + "Err message=" + result.message); 
     }
 }
+
+
 /* 初始化UI、检查用户是否认证 */
 FirstAssistant.prototype.setup = function() {
 	/* this function is for setup tasks that have to happen when the scene is first created */
@@ -102,6 +104,7 @@ FirstAssistant.prototype.setup = function() {
         spinning: true
     }
     this.controller.setupWidget('large-activity-spinner', this.spinnerLAttrs, this.spinnerModel);
+    //this.checkInternetConnection();
     this.checkAccessExist();
 };
 

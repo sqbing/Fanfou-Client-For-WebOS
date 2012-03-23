@@ -152,10 +152,10 @@ UploadAssistant.prototype.updateStatusToFanfou = function(status){
     return true;
 }
 
-UploadAssistant.prototype.cbGetAccessParamsSuccess = function(msg) {
+UploadAssistant.prototype.cbGetAccessParamsSuccess = function(msg, status, jqXHR) {
     upload_processing = 0;
     // this.controller.get('id_send_status').mojo.deactivate();
-    Mojo.Log.info( "Update status successfully.\nReturn is: "+JSON.stringify(msg) );
+    Mojo.Log.info( "Update status successfully.\nReturn is: "+JSON.stringify(msg)+" textstatus: "+ JSON.stringify(status)+" jqXHR: "+JSON.stringify(jqXHR));
     // this.controller.showAlertDialog({
         // //onChoose: function(value) {this.controller.get("area-to-update").innerText = "Alert result = " + value;},
         // title: $L("发送成功！"),
@@ -174,14 +174,14 @@ UploadAssistant.prototype.cbGetAccessParamsSuccess = function(msg) {
 /*
  * Called by Prototype when the request fails.
  */
-UploadAssistant.prototype.cbGetAccessParamsError = function(msg) {
+UploadAssistant.prototype.cbGetAccessParamsError = function(msg, Status, errorThrown) {
     upload_processing = 0;
     // this.controller.get('id_send_status').mojo.deactivate();
-    Mojo.Log.error( "Failed to update status.\nReturn is: "+JSON.stringify(msg) );
+    Mojo.Log.error( "Failed to update status.\nReturn is: "+JSON.stringify(msg) +" textstatus: "+ JSON.stringify(status)+" errorThrown: "+ JSON.stringify(errorThrown));
     this.controller.showAlertDialog({
         //onChoose: function(value) {this.controller.get("area-to-update").innerText = "Alert result = " + value;},
         title: $L("发送失败！"),
-        //message: $L("发送成功！"),
+        //message: msg.responseText.error,
         choices:[
              // {label:$L('Rare'), value:"refresh", type:'affirmative'},  
              // {label:$L("Medium"), value:"don't refresh"},
