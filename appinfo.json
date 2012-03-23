@@ -1,0 +1,17 @@
+{
+	"id": "com.riderwoo.helloworld",
+	"version": "0.1.0",
+	"vendor": "RiderWoo",
+	"type": "web",
+	"main": "index.html",
+	"title": "Fanfou",
+	"icon": "icon.png",
+	"noWindow": "true",
+	"universalSearch" : {
+      "action" :  { 
+          "displayName" : "发消息到饭否",
+          "url"         : "com.riderwoo.helloworld",
+          "launchParam" : "status"
+      }}
+}
+

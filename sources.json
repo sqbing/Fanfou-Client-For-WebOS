@@ -1,0 +1,33 @@
+[
+    {
+        "source": "app/assistants/stage-assistant.js"
+    },
+    {
+        "scenes": "first",
+        "source": "app/assistants/first-assistant.js"
+    },
+    {
+        "scenes": "auth",
+        "source": "app/assistants/auth-assistant.js"
+    },
+    {
+        "scenes": "main",
+        "source": "app/assistants/main-assistant.js"
+    },
+    {
+        "scenes": "upload",
+        "source": "app/assistants/upload-assistant.js"
+    },
+    {
+    	"source": "app/js/oauth.js"
+    },
+    {
+    	"source": "app/js/sha1.js"
+    },
+    {
+    	"source": "app/js/jquery-1_7_1.js"
+    },
+    {
+        "source": "app/assistants/app-assistant.js"
+    }
+]
