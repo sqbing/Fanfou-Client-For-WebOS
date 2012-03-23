@@ -5,3 +5,15 @@
 Fanfou Client For WebOS is yet another client for Fanfou unofficially. We hope it will be one of the best Fanfou client apps.
 Fanfou(http://www.fanfou.com) is a social website.
 It's still under development, and many functions are just in roadmap. If you wanna join us, contact me at Gmail(sqbing) or my fanfou http://www.fanfou.com/sqbing.
+
+DONE:
+1.XAUTH认证
+2.更新状态
+3.上传照片
+4.通过Just Type更新状态
+
+TODO:
+0.App Menu中的“首选项”
+1.“首页”scene
+2.“@”scene
+3.“私信”scene
