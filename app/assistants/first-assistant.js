@@ -89,6 +89,52 @@ FirstAssistant.prototype.checkAccessExist = function() {
 }
 
 
+FirstAssistant.prototype.checkInternetConnection= function() {
+		this.controller.serviceRequest('palm://com.palm.connectionmanager', {
+		     method: 'getstatus',
+		     parameters: {},
+		     onSuccess : function (e){ 
+			     	Mojo.Log.error("getStatus success, results="+JSON.stringify(e)); 
+			     	if(e.wifi.state == "connected" || e.wan.state == "connected")
+			     	{
+			     		this.checkAccessExist();
+			     	}
+			     	else
+			     	{
+			     		this.controller.showAlertDialog({
+					        onChoose: function(value) {
+					        	this.controller.stageController.getAppController().closeAllStages();
+					        	}.bind(this),
+					        title: $L("没有网络连接！"),
+					        //message: msg.responseText.error,
+					        choices:[
+					             // {label:$L('Rare'), value:"refresh", type:'affirmative'},  
+					             // {label:$L("Medium"), value:"don't refresh"},
+					             // {label:$L("Overcooked"), value:"don't refresh", type:'negative'},    
+					             {label:$L("返回"), value:"maybe refresh", type:'dismiss'}    
+					        ]
+		    			});
+			     	}
+		     	}.bind(this),
+		     onFailure : function (e){
+		     	Mojo.Log.error("getStatus failed, results="+JSON.stringify(e)); 
+		     	this.controller.showAlertDialog({
+					        onChoose: function(value) {
+					        	this.controller.stageController.getAppController().closeAllStages();
+					        	}.bind(this),
+				        title: $L("系统异常！"),
+				        //message: msg.responseText.error,
+				        choices:[
+				             // {label:$L('Rare'), value:"refresh", type:'affirmative'},  
+				             // {label:$L("Medium"), value:"don't refresh"},
+				             // {label:$L("Overcooked"), value:"don't refresh", type:'negative'},    
+				             {label:$L("返回"), value:"maybe refresh", type:'dismiss'}    
+				        ]
+	    			});
+				}.bind(this)
+		});
+}
+
 /* 初始化UI、检查用户是否认证 */
 FirstAssistant.prototype.setup = function() {
 	/* this function is for setup tasks that have to happen when the scene is first created */
@@ -104,8 +150,8 @@ FirstAssistant.prototype.setup = function() {
         spinning: true
     }
     this.controller.setupWidget('large-activity-spinner', this.spinnerLAttrs, this.spinnerModel);
-    //this.checkInternetConnection();
-    this.checkAccessExist();
+    this.checkInternetConnection();
+    //this.checkAccessExist();
 };
 
 FirstAssistant.prototype.activate = function(event) {
