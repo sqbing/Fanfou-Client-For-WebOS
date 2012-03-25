@@ -103,7 +103,8 @@ FirstAssistant.prototype.checkInternetConnection= function() {
 			     	{
 			     		this.controller.showAlertDialog({
 					        onChoose: function(value) {
-					        	this.controller.stageController.getAppController().closeAllStages();
+					        	// this.controller.stageController.getAppController().closeAllStages();
+					        	this.checkAccessExist();
 					        	}.bind(this),
 					        title: $L("没有网络连接！"),
 					        //message: msg.responseText.error,

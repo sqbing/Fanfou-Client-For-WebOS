@@ -186,7 +186,7 @@ UploadAssistant.prototype.cbUpdateStatusSuccess = function(msg, status, jqXHR) {
     // 显示“发送成功”提示信息
     Mojo.Controller.getAppController().showBanner("发送成功！",{source: 'notification'});
     // 重新使能输入框
-    this.enableTextModel();
+    this.enableTextField();
     // TODO 发送成功，返回List
     // 清空输入框textField
     this.controller.get('textField').mojo.setValue("");
@@ -217,7 +217,7 @@ UploadAssistant.prototype.cbUpdateStatusError = function(msg, Status, errorThrow
     // 显示“发送失败”提示信息    
     Mojo.Controller.getAppController().showBanner("发送失败！",{source: 'notification'});
     // 重新使能输入框
-    this.enableTextModel();
+    this.enableTextField();
     // 重新使能底栏按钮
     this.enableCommandMenu();
 }
@@ -242,7 +242,7 @@ UploadAssistant.prototype.cbUploadPICError = function(e) {
     // ]
     // });
     // 重新使能输入框
-    this.enableTextModel();
+    this.enableTextField();
     // 显示“发送失败”提示信息    
     Mojo.Controller.getAppController().showBanner("发送失败！",{source: 'notification'});
     // 重新使能底栏按钮
@@ -267,7 +267,7 @@ UploadAssistant.prototype.cbUploadPICSuccess = function(e) {
         // 清空输入框
         this.controller.get('textField').mojo.setValue("");
         // 重新使能输入框
-        this.enableTextModel();
+        this.enableTextField();
         // 清除图片信息
         this.img_to_send_path = ""; 
         // 重新使能底栏按钮
@@ -429,15 +429,25 @@ UploadAssistant.prototype.setup = function() {
     this.controller.get("id_title").innerText = "你在做什么？";
     // 设置标题栏
     this.controller.get("id_main_hdr").innerText = "更新状态";
+    // 初始化发送按钮和添加图片按钮
     this.commandMenuModel = {
         items:  [
             { label: 'button_attach', command: 'cmd_attach', icon: 'attach' },
             { label: 'button_send', command: 'cmd_send',icon: 'send' }
         ]
     };
-    // 初始化发送和添加图片按钮
 	this.controller.setupWidget(Mojo.Menu.commandMenu, undefined, this.commandMenuModel);
-    this.checkInternetConnection();
+	// this.controller.setupWidget('large-activity-spinner', 
+	   // {
+            // fps: 14,
+            // frameHeight: 26,
+            // startFrameCount: 7,
+            // mainFrameCount: 10
+        // }, 
+        // { spinning: true }
+    // );
+    // TODO 进入更新状态页面时需要检查当前的Internet连接状态
+    // this.checkInternetConnection();
 }
 
 UploadAssistant.prototype.checkInternetConnectionAndUpdate= function() {
