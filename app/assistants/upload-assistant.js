@@ -7,7 +7,6 @@ function UploadAssistant(arg) {
        Mojo.Log.info("arg: "+JSON.stringify(arg));
       
 }
-var img_to_send_path = "";
 var consumer_token = "60648e4719285ec6fb437785e655bda5";
 var consumer_secret = "aed509928807eab4f1a615e4d422c724";
 var access_token = "";              
@@ -20,8 +19,8 @@ UploadAssistant.prototype.eBTNSelect = function(){
     var params = { defaultKind: 'image',
       onSelect: function(file){
           //self.controller.get('selection').innerHTML = Object.toJSON(file);
-          img_to_send_path = file.fullPath;
-      }
+          this.img_to_send_path = file.fullPath;
+      }.bind(this)
     }
     Mojo.FilePicker.pickFile(params, self.controller.stageController);
 };
@@ -29,7 +28,7 @@ UploadAssistant.prototype.eBTNSelect = function(){
 // 在这个函数中弹出提示，告诉用户当前没有任何信息需要提交
 UploadAssistant.prototype.nullInputUpdate = function(){
     Mojo.Log.error("NULL input.");
-    upload_processing = 0;
+    this.upload_processing = 0;
     // this.controller.get('id_send_status').mojo.deactivate();
     this.controller.showAlertDialog({
         //onChoose: function(value) {this.controller.get("area-to-update").innerText = "Alert result = " + value;},
@@ -42,6 +41,7 @@ UploadAssistant.prototype.nullInputUpdate = function(){
              {label:$L("返回"), value:"maybe refresh", type:'dismiss'}    
         ]
         });
+    this.enableTextField();
     this.enableCommandMenu();
     return false;
 }
@@ -57,21 +57,36 @@ UploadAssistant.prototype.disableCommandMenu = function(){
     this.commandMenuModel.items[1].disabled = true;
     this.controller.modelChanged(this.commandMenuModel);    
 }
+
+UploadAssistant.prototype.disableTextField = function(){
+    this.textModel["disabled"] = true;
+    this.controller.modelChanged(this.textModel);
+}
+UploadAssistant.prototype.enableTextField = function(){
+    this.textModel["disabled"] = false;
+    this.controller.modelChanged(this.textModel);
+}
+
 // 发送(图片)状态更新到饭否
 UploadAssistant.prototype.eBTNSend = function(){
     this.disableCommandMenu();
-    if(img_to_send_path == "" && this.controller.get('textField').mojo.getValue() == "")
+    this.disableTextField();
+    if(this.img_to_send_path == "" && this.controller.get('textField').mojo.getValue() == "")
     {
         return this.nullInputUpdate();
     }
 	return this.checkInternetConnectionAndUpdate();    
 }
 
+/*
+ * 发送消息到饭否
+ * */
+
 UploadAssistant.prototype.updateStatusToFanfou = function(status){
     if(status == "")
     {
         Mojo.Log.error("Can't update status without input.");
-        upload_processing = 0;
+        this.upload_processing = 0;
         // this.controller.get('id_send_status').mojo.deactivate();
         this.enableCommandMenu();
         return false;
@@ -82,7 +97,7 @@ UploadAssistant.prototype.updateStatusToFanfou = function(status){
     var DB = libraries["foundations"].Data.DB;  // db8 wrapper library
     } catch (Error) {
                         Mojo.Log.error(Error);
-                        upload_processing = 0;
+                        this.upload_processing = 0;
                         // this.controller.get('id_send_status').mojo.deactivate();
                         this.enableCommandMenu();
                         return false;
@@ -126,8 +141,8 @@ UploadAssistant.prototype.updateStatusToFanfou = function(status){
                            url: url,
                            headers: headers,
                            data: "status="+status,
-                           success: this.cbGetAccessParamsSuccess.bind(this),
-                           error: this.cbGetAccessParamsError.bind(this)
+                           success: this.cbUpdateStatusSuccess.bind(this),
+                           error: this.cbUpdateStatusError.bind(this)
                          });
                  return true;
              }
@@ -135,7 +150,7 @@ UploadAssistant.prototype.updateStatusToFanfou = function(status){
              {
                  // TODO 重新获取access_token,access_secret
                  Mojo.Log.error("Bug! Failed to get access_token and access_secret.");
-                 upload_processing = 0;
+                 this.upload_processing = 0;
                  // this.controller.get('id_send_status').mojo.deactivate();
                  this.enableCommandMenu();
                  return false;
@@ -145,7 +160,7 @@ UploadAssistant.prototype.updateStatusToFanfou = function(status){
           {  
              result = future.exception;
              Mojo.Log.error("find failure: Err code=" + result.errorCode + "Err message=" + result.message);
-             upload_processing = 0;
+             this.upload_processing = 0;
              // this.controller.get('id_send_status').mojo.deactivate(); 
              this.enableCommandMenu();
              return false;
@@ -155,50 +170,119 @@ UploadAssistant.prototype.updateStatusToFanfou = function(status){
     else
     {
         Mojo.Log.error("Failed to get DB8 instance.");
-        upload_processing = 0;
+        this.upload_processing = 0;
         // this.controller.get('id_send_status').mojo.deactivate();
         this.enableCommandMenu();
         return false;
     }
 }
-
-UploadAssistant.prototype.cbGetAccessParamsSuccess = function(msg, status, jqXHR) {
-    upload_processing = 0;
+/*
+ * 发送消息成功
+ */
+UploadAssistant.prototype.cbUpdateStatusSuccess = function(msg, status, jqXHR) {
+    this.upload_processing = 0;
     // this.controller.get('id_send_status').mojo.deactivate();
     Mojo.Log.info( "Update status successfully.\nReturn is: "+JSON.stringify(msg)+" textstatus: "+ JSON.stringify(status)+" jqXHR: "+JSON.stringify(jqXHR));
+    // 显示“发送成功”提示信息
     Mojo.Controller.getAppController().showBanner("发送成功！",{source: 'notification'});
+    // 重新使能输入框
+    this.enableTextField();
     // TODO 发送成功，返回List
-    this.controller.stageController.getAppController().closeAllStages();
+    // 清空输入框textField
+    this.controller.get('textField').mojo.setValue("");
+    // 重新使能底栏按钮
+    this.enableCommandMenu();
 }
 
 
 /*
- * Called by Prototype when the request fails.
+ * 发送消息失败
  */
-UploadAssistant.prototype.cbGetAccessParamsError = function(msg, Status, errorThrown) {
-    upload_processing = 0;
+UploadAssistant.prototype.cbUpdateStatusError = function(msg, Status, errorThrown) {
+    this.upload_processing = 0;
     // this.controller.get('id_send_status').mojo.deactivate();
     Mojo.Log.error( "Failed to update status.\nReturn is: "+JSON.stringify(msg) +" textstatus: "+ JSON.stringify(status)+" errorThrown: "+ JSON.stringify(errorThrown));
-    this.controller.showAlertDialog({
-        //onChoose: function(value) {this.controller.get("area-to-update").innerText = "Alert result = " + value;},
-        title: $L("发送失败！"),
-        //message: msg.responseText.error,
-        choices:[
-             // {label:$L('Rare'), value:"refresh", type:'affirmative'},  
-             // {label:$L("Medium"), value:"don't refresh"},
-             // {label:$L("Overcooked"), value:"don't refresh", type:'negative'},    
-             {label:$L("返回"), value:"maybe refresh", type:'dismiss'}    
-        ]
-        });
+    // this.controller.showAlertDialog({
+        // //onChoose: function(value) {this.controller.get("area-to-update").innerText = "Alert result = " + value;},
+        // title: $L("发送失败！"),
+        // //message: msg.responseText.error,
+        // choices:[
+             // // {label:$L('Rare'), value:"refresh", type:'affirmative'},  
+             // // {label:$L("Medium"), value:"don't refresh"},
+             // // {label:$L("Overcooked"), value:"don't refresh", type:'negative'},    
+             // {label:$L("返回"), value:"maybe refresh", type:'dismiss'}    
+        // ]
+        // });
     //this.controller.get('selection').innerHTML = "Failed to update status.\nReturn is: "+JSON.stringify(msg);
+    // 显示“发送失败”提示信息    
+    Mojo.Controller.getAppController().showBanner("发送失败！",{source: 'notification'});
+    // 重新使能输入框
+    this.enableTextField();
+    // 重新使能底栏按钮
     this.enableCommandMenu();
 }
+/*
+ * 上传图片失败
+ */
+UploadAssistant.prototype.cbUploadPICError = function(e) {
+    Mojo.Log.error("Upload failure, results="+JSON.stringify(e));
+    //this.controller.get('selection').innerHTML = "Upload failure, results="+JSON.stringify(e);
+    this.upload_processing = 0;
+    // this.controller.get('id_send_status').mojo.deactivate();
+    //Mojo.Log.error( "Failed to update status.\nReturn is: "+JSON.stringify(msg) );
+    // this.controller.showAlertDialog({
+       // //onChoose: function(value) {this.controller.get("area-to-update").innerText = "Alert result = " + value;},
+    // title: $L("发送失败！"),
+    // //message: $L("发送成功！"),
+    // choices:[
+        // // {label:$L('Rare'), value:"refresh", type:'affirmative'},  
+        // // {label:$L("Medium"), value:"don't refresh"},
+        // // {label:$L("Overcooked"), value:"don't refresh", type:'negative'},    
+        // {label:$L("返回"), value:"maybe refresh", type:'dismiss'}    
+    // ]
+    // });
+    // 重新使能输入框
+    this.enableTextField();
+    // 显示“发送失败”提示信息    
+    Mojo.Controller.getAppController().showBanner("发送失败！",{source: 'notification'});
+    // 重新使能底栏按钮
+    this.enableCommandMenu();
+}
+/*
+ * 上传图片成功
+ */
+UploadAssistant.prototype.cbUploadPICSuccess = function(e) {
+    Mojo.Log.error("Upload processing, results="+JSON.stringify(e)); 
+    //this.controller.get('selection').innerHTML = "Upload success, results="+JSON.stringify(e);
+    // 检查HTTP状态码，只有200上传成功时才发送提示消息
+    if(e.httpCode == 200)
+    {
+        this.upload_processing = 0;
+        // this.controller.get('id_send_status').mojo.deactivate(); 
+        //Mojo.Log.info( "Upload pic successfully.\nReturn is: "+JSON.stringify(e) );
+        
+        // 显示“发送失败”提示信息
+        Mojo.Controller.getAppController().showBanner("发送成功！",{source: 'notification'});
+        // TODO 发送成功，返回List   
+        // 清空输入框
+        this.controller.get('textField').mojo.setValue("");
+        // 重新使能输入框
+        this.enableTextField();
+        // 清除图片信息
+        this.img_to_send_path = ""; 
+        // 重新使能底栏按钮
+        this.enableCommandMenu();
+    }
+}
+/*
+ * 上传图片到饭否
+ * */
 UploadAssistant.prototype.uploadPicToFanfou = function(file_path, status)
 {
     if(file_path == "")
     {
         Mojo.Log.error("Can't upload without file path.");
-        upload_processing = 0;
+        this.upload_processing = 0;
         // this.controller.get('id_send_status').mojo.deactivate();
         this.enableCommandMenu();
         return false;
@@ -209,7 +293,7 @@ UploadAssistant.prototype.uploadPicToFanfou = function(file_path, status)
     var DB = libraries["foundations"].Data.DB;  // db8 wrapper library
     } catch (Error) {
                         Mojo.Log.error(Error);
-                        upload_processing = 0;
+                        this.upload_processing = 0;
                         // this.controller.get('id_send_status').mojo.deactivate();
                         this.enableCommandMenu();
                         return false;
@@ -267,46 +351,15 @@ UploadAssistant.prototype.uploadPicToFanfou = function(file_path, status)
                          "subscribe": true ,
                          "customHttpHeaders": ["Authorization: "+headers.Authorization],
                       },
-                      onSuccess : function (e){
-                          Mojo.Log.error("Upload processing, results="+JSON.stringify(e)); 
-                          //this.controller.get('selection').innerHTML = "Upload success, results="+JSON.stringify(e);
-                          if(e.httpCode == 200)
-                          {
-                              upload_processing = 0;
-                              // this.controller.get('id_send_status').mojo.deactivate(); 
-                              //Mojo.Log.info( "Upload pic successfully.\nReturn is: "+JSON.stringify(e) );
-                              Mojo.Controller.getAppController().showBanner("发送成功！",{source: 'notification'});
-							  // TODO 发送成功，返回List
-						      this.controller.stageController.getAppController().closeAllStages();
-                          }
-                          }.bind(this),
-                      onFailure : function (e){ 
-                          Mojo.Log.error("Upload failure, results="+JSON.stringify(e));
-                          //this.controller.get('selection').innerHTML = "Upload failure, results="+JSON.stringify(e);
-                          upload_processing = 0;
-                          // this.controller.get('id_send_status').mojo.deactivate();
-                          //Mojo.Log.error( "Failed to update status.\nReturn is: "+JSON.stringify(msg) );
-                          this.controller.showAlertDialog({
-                              //onChoose: function(value) {this.controller.get("area-to-update").innerText = "Alert result = " + value;},
-                              title: $L("发送失败！"),
-                              //message: $L("发送成功！"),
-                              choices:[
-                                   // {label:$L('Rare'), value:"refresh", type:'affirmative'},  
-                                   // {label:$L("Medium"), value:"don't refresh"},
-                                   // {label:$L("Overcooked"), value:"don't refresh", type:'negative'},    
-                                   {label:$L("返回"), value:"maybe refresh", type:'dismiss'}    
-                              ]
-                          });
-                          this.enableCommandMenu();
-                          return false;
-                      }.bind(this)
+                      onSuccess : this.cbUploadPICSuccess.bind(this),
+                      onFailure : this.cbUploadPICError.bind(this)
                 });
              }
              else
              {
                  // TODO 重新获取access_token,access_secret
                  Mojo.Log.error("Bug! Failed to get access_token and access_secret.");
-                 upload_processing = 0;
+                 this.upload_processing = 0;
                  // this.controller.get('id_send_status').mojo.deactivate();
                  this.enableCommandMenu();
                  return false;
@@ -316,7 +369,7 @@ UploadAssistant.prototype.uploadPicToFanfou = function(file_path, status)
           {  
              result = future.exception;
              Mojo.Log.error("find failure: Err code=" + result.errorCode + "Err message=" + result.message); 
-             upload_processing = 0;
+             this.upload_processing = 0;
              // this.controller.get('id_send_status').mojo.deactivate();
              this.enableCommandMenu();
              return false;
@@ -326,20 +379,19 @@ UploadAssistant.prototype.uploadPicToFanfou = function(file_path, status)
     else
     {
         Mojo.Log.error("Failed to get DB8 instance.");
-        upload_processing = 0;
+        this.upload_processing = 0;
         // this.controller.get('id_send_status').mojo.deactivate();
         this.enableCommandMenu();
         return false;
     }
 }
-var upload_processing = 0;
 UploadAssistant.prototype.setup = function() {
     // Set up a few models so we can test setting the widget model:
     //Mojo.Log.error("Enter upload scene");
-    upload_processing = 0;
-     
-     /* 初始化用户名输入框 */
-     var attributes = {
+    this.upload_processing = 0;
+    this.img_to_send_path = "";
+    /* 初始化用户名输入框 */
+    var attributes = {
                 hintText: '',
                 textFieldName:  'name', 
                 modelProperty:      'original', 
@@ -377,15 +429,25 @@ UploadAssistant.prototype.setup = function() {
     this.controller.get("id_title").innerText = "你在做什么？";
     // 设置标题栏
     this.controller.get("id_main_hdr").innerText = "更新状态";
+    // 初始化发送按钮和添加图片按钮
     this.commandMenuModel = {
         items:  [
             { label: 'button_attach', command: 'cmd_attach', icon: 'attach' },
             { label: 'button_send', command: 'cmd_send',icon: 'send' }
         ]
     };
-    // 初始化发送和添加图片按钮
 	this.controller.setupWidget(Mojo.Menu.commandMenu, undefined, this.commandMenuModel);
-    this.checkInternetConnection();
+	// this.controller.setupWidget('large-activity-spinner', 
+	   // {
+            // fps: 14,
+            // frameHeight: 26,
+            // startFrameCount: 7,
+            // mainFrameCount: 10
+        // }, 
+        // { spinning: true }
+    // );
+    // TODO 进入更新状态页面时需要检查当前的Internet连接状态
+    // this.checkInternetConnection();
 }
 
 UploadAssistant.prototype.checkInternetConnectionAndUpdate= function() {
@@ -396,14 +458,14 @@ UploadAssistant.prototype.checkInternetConnectionAndUpdate= function() {
 			     	Mojo.Log.error("getStatus success, results="+JSON.stringify(e)); 
 			     	if(e.wifi.state == "connected" || e.wan.state == "connected")
 			     	{
-			     		upload_processing = 1;
-					    if(img_to_send_path == "")
+			     		this.upload_processing = 1;
+					    if(this.img_to_send_path == "")
 					    {
 					        // TODO 告诉用户先选择照片
 					        return this.updateStatusToFanfou(this.controller.get('textField').mojo.getValue());
 					    }
 					    // 调用uploadPicToFanfou上传照片
-					    return this.uploadPicToFanfou(img_to_send_path, this.controller.get('textField').mojo.getValue());
+					    return this.uploadPicToFanfou(this.img_to_send_path, this.controller.get('textField').mojo.getValue());
 			     	}
 			     	else
 			     	{
