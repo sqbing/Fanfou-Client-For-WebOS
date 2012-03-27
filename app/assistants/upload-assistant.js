@@ -4,7 +4,7 @@ function UploadAssistant(arg) {
        to the scene controller (this.controller) has not be established yet, so any initialization
        that needs the scene controller should be done in the setup function below. */
        this.launchParams = arg;
-       Mojo.Log.info("arg: "+JSON.stringify(arg));
+       // Mojo.Log.info("arg: "+JSON.stringify(arg));
       
 }
 var consumer_token = "60648e4719285ec6fb437785e655bda5";
@@ -42,6 +42,7 @@ UploadAssistant.prototype.nullInputUpdate = function(){
         ]
         });
     this.enableTextField();
+    this.controller.get('id_my_spinner_in_header').mojo.stop();
     this.enableCommandMenu();
     return false;
 }
@@ -71,6 +72,7 @@ UploadAssistant.prototype.enableTextField = function(){
 UploadAssistant.prototype.eBTNSend = function(){
     this.disableCommandMenu();
     this.disableTextField();
+    this.controller.get('id_my_spinner_in_header').mojo.start();
     if(this.img_to_send_path == "" && this.controller.get('textField').mojo.getValue() == "")
     {
         return this.nullInputUpdate();
@@ -187,6 +189,7 @@ UploadAssistant.prototype.cbUpdateStatusSuccess = function(msg, status, jqXHR) {
     Mojo.Controller.getAppController().showBanner("发送成功！",{source: 'notification'});
     // 重新使能输入框
     this.enableTextField();
+    this.controller.get('id_my_spinner_in_header').mojo.stop();
     // TODO 发送成功，返回List
     // 清空输入框textField
     this.controller.get('textField').mojo.setValue("");
@@ -218,6 +221,7 @@ UploadAssistant.prototype.cbUpdateStatusError = function(msg, Status, errorThrow
     Mojo.Controller.getAppController().showBanner("发送失败！",{source: 'notification'});
     // 重新使能输入框
     this.enableTextField();
+    this.controller.get('id_my_spinner_in_header').mojo.stop();
     // 重新使能底栏按钮
     this.enableCommandMenu();
 }
@@ -243,6 +247,7 @@ UploadAssistant.prototype.cbUploadPICError = function(e) {
     // });
     // 重新使能输入框
     this.enableTextField();
+    this.controller.get('id_my_spinner_in_header').mojo.stop();
     // 显示“发送失败”提示信息    
     Mojo.Controller.getAppController().showBanner("发送失败！",{source: 'notification'});
     // 重新使能底栏按钮
@@ -268,6 +273,7 @@ UploadAssistant.prototype.cbUploadPICSuccess = function(e) {
         this.controller.get('textField').mojo.setValue("");
         // 重新使能输入框
         this.enableTextField();
+        this.controller.get('id_my_spinner_in_header').mojo.stop();
         // 清除图片信息
         this.img_to_send_path = ""; 
         // 重新使能底栏按钮
@@ -437,15 +443,14 @@ UploadAssistant.prototype.setup = function() {
         ]
     };
 	this.controller.setupWidget(Mojo.Menu.commandMenu, undefined, this.commandMenuModel);
-	// this.controller.setupWidget('large-activity-spinner', 
-	   // {
-            // fps: 14,
-            // frameHeight: 26,
-            // startFrameCount: 7,
-            // mainFrameCount: 10
-        // }, 
-        // { spinning: true }
-    // );
+	// 初始化header中的spinner
+	this.controller.setupWidget('id_my_spinner_in_header', 
+	   {
+            spinnerSize: Mojo.Widget.spinnerSmall
+       }, 
+       { spinning: false }
+    );
+    // this.controller.get('id_my_spinner_in_header').mojo.start();
     // TODO 进入更新状态页面时需要检查当前的Internet连接状态
     // this.checkInternetConnection();
 }
@@ -455,7 +460,7 @@ UploadAssistant.prototype.checkInternetConnectionAndUpdate= function() {
 		     method: 'getstatus',
 		     parameters: {},
 		     onSuccess : function (e){ 
-			     	Mojo.Log.error("getStatus success, results="+JSON.stringify(e)); 
+			     	// Mojo.Log.error("getStatus success, results="+JSON.stringify(e)); 
 			     	if(e.wifi.state == "connected" || e.wan.state == "connected")
 			     	{
 			     		this.upload_processing = 1;

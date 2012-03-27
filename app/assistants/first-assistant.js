@@ -4,7 +4,7 @@ function FirstAssistant(arg) {
 	   to the scene controller (this.controller) has not be established yet, so any initialization
 	   that needs the scene controller should be done in the setup function below. */
 	   this.launchParams = arg;
-	   Mojo.Log.error("arg: "+JSON.stringify(arg));
+	   // Mojo.Log.error("arg: "+JSON.stringify(arg));
 }
 
 
@@ -94,7 +94,7 @@ FirstAssistant.prototype.checkInternetConnection= function() {
 		     method: 'getstatus',
 		     parameters: {},
 		     onSuccess : function (e){ 
-			     	Mojo.Log.error("getStatus success, results="+JSON.stringify(e)); 
+			     	// Mojo.Log.error("getStatus success, results="+JSON.stringify(e)); 
 			     	if(e.wifi.state == "connected" || e.wan.state == "connected")
 			     	{
 			     		this.checkAccessExist();

@@ -6,3 +6,7 @@
     margin-left: -64px;
     margin-top:-64px;
 }
+#id_my_spinner_in_header{
+    position: relative;
+    z-index: 99999;
+}
