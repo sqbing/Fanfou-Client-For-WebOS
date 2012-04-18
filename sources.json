@@ -15,6 +15,10 @@
         "source": "app/assistants/main-assistant.js"
     },
     {
+        "scenes": "preference",
+        "source": "app/assistants/preference-assistant.js"
+    },
+    {
         "scenes": "upload",
         "source": "app/assistants/upload-assistant.js"
     },

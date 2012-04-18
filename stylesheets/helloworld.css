@@ -10,3 +10,15 @@
     position: relative;
     z-index: 99999;
 }
+.item_name{
+    padding: 10px 0 10px 0;
+}
+.palm-row-wrapper .name
+{
+    width:30%;
+}
+
+.palm-row-wrapper .text
+{
+    width: 70%;
+}

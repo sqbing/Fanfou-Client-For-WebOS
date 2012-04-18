@@ -17,9 +17,16 @@ var access_secret = "";
 UploadAssistant.prototype.eBTNSelect = function(){
     var self = this; //Retain the reference for the callback
     var params = { defaultKind: 'image',
+      //crop: {width:240, height: 240},
       onSelect: function(file){
           //self.controller.get('selection').innerHTML = Object.toJSON(file);
           this.img_to_send_path = file.fullPath;
+          Mojo.Log.error("After crop image json is: %s", Object.toJSON(file));
+          if(Object.fullPath != undefined)
+          {
+              Mojo.Log.error("Found fullPath: "+ Object.fullPath);
+              this.controller.get('id_image_view').mojo.centerUrlProvided(Object.fullPath);
+          }
       }.bind(this)
     }
     Mojo.FilePicker.pickFile(params, self.controller.stageController);
@@ -393,7 +400,7 @@ UploadAssistant.prototype.uploadPicToFanfou = function(file_path, status)
 }
 UploadAssistant.prototype.setup = function() {
     // Set up a few models so we can test setting the widget model:
-    //Mojo.Log.error("Enter upload scene");
+    Mojo.Log.error("Enter upload scene");
     this.upload_processing = 0;
     this.img_to_send_path = "";
     /* 初始化用户名输入框 */
@@ -415,12 +422,23 @@ UploadAssistant.prototype.setup = function() {
                 textReplacement: false,
                 requiresEnterKey: false
     };
-    if(this.launchParams.status != undefined)
+    if(this.launchParams != undefined)
     {
-        this.textModel = {
-            'original' : this.launchParams.status,
-            disabled: false
-        };
+        if(this.launchParams.status != undefined)
+        {
+            Mojo.Log.error("lauch params is "+ this.launchParams.status);
+            this.textModel = {
+                'original' : this.launchParams.status,
+                disabled: false
+            };
+        }
+        else
+        {
+            this.textModel = {
+                'original' : "",
+                disabled: false
+            };
+        }
     }
     else
     {
@@ -450,6 +468,22 @@ UploadAssistant.prototype.setup = function() {
        }, 
        { spinning: false }
     );
+    // 初始化appMenu
+    this.controller.setupWidget(Mojo.Menu.appMenu,
+        this.appMenuAttributes = {
+            omitDefaultItems: true
+        },
+        this.appMenuModel = {
+            visible: true,
+            items: [
+                Mojo.Menu.editItem,
+                { label: "首选项", command: 'do_myPrefs' },
+                //{ label: "注销", command: 'do_logout' },
+                //{ label: "Help...", command: 'do-myHelp' }
+                ]
+        }
+    ); 
+
     // this.controller.get('id_my_spinner_in_header').mojo.start();
     // TODO 进入更新状态页面时需要检查当前的Internet连接状态
     // this.checkInternetConnection();
@@ -559,28 +593,99 @@ UploadAssistant.prototype.checkInternetConnection= function() {
 
 UploadAssistant.prototype.handleCommand = function(event) {
 	if(event.type == Mojo.Event.command) {
+	    Mojo.Log.info(event.command);
 		switch(event.command)
 		{
 			case 'cmd_attach':
-				//this.controller.get('message').innerText = ('menu button 1 pressed')
-				Mojo.Log.info("cmd_attach");
 				this.eBTNSelect();
 			break;
 			case 'cmd_send':
-				//this.controller.get('message').innerText = ('menu button 2 pressed')Mojo.Log.error("cmd-1");
-				Mojo.Log.info("cmd_send");
 				this.eBTNSend();
 			break;
+			case 'do_myPrefs':
+                this.controller.stageController.pushScene("preference");
+            break;
+            case 'do_logout':
+                this.controller.showAlertDialog({
+                            onChoose: function(value) {
+                                    if(value == "ok")
+                                    {
+                                        try {
+                                        var libraries = MojoLoader.require({ name: "foundations" , version: "1.0"     });
+                                        //var Future = libraries["foundations"].Control.Future; // Futures library
+                                        var DB = libraries["foundations"].Data.DB;  // db8 wrapper library
+                                        } catch (Error) {
+                                            Mojo.Log.error(Error);
+                                            return false;
+                                        }
+                                        if(DB)
+                                        {
+                                            Mojo.Log.info("Now try to delete all account informations.");
+                                            var q = {"from":"com.riderwoo.helloworld:1"};
+                                            DB.del(q).then(function(future){
+                                                // 删除帐号成功后，进入auth scene
+                                                this.controller.stageController.swapScene("auth");
+                                            }.bind(this));
+                                        }
+                                    }
+                                }.bind(this),
+                        title: $L("确定注销？"),
+                        //message: msg.responseText.error,
+                        choices:[
+                             // {label:$L('Rare'), value:"refresh", type:'affirmative'},  
+                             // {label:$L("Medium"), value:"don't refresh"},
+                             {label:$L("确定"), value:"ok", type:''},    
+                             {label:$L("返回"), value:"cacel", type:''}    
+                        ]
+                    });
+            break;
 			default:
-				//Mojo.Controller.errorDialog("Got command " + event.command);
-				Mojo.Log.error("default");
+				Mojo.Log.error(event.command);
 			break;
 		}
 	}
 }
+
+UploadAssistant.prototype.checkAuthParams = function() {
+    /* 查询数据库，是否已经认证过用户名和密码 */
+    var fquery = {"from":"com.riderwoo.helloworld:1"};
+    var libraries = MojoLoader.require({ name: "foundations" , version: "1.0"     });
+    var DB = libraries["foundations"].Data.DB;
+    DB.find(fquery, false, false).then(function(future)
+    {
+         var result = future.result;
+         if (result.returnValue === true)   
+         {
+            Mojo.Log.info("find success, results="+JSON.stringify(result.results));
+            if(result.results == "" || 
+                result.results[0].fanfou_access_token == undefined || 
+                result.results[0].fanfou_access_secret == undefined)
+            {
+                // 如果没在数据库中找到用户名密码，就进入first-scene,开始xauth认证
+                this.controller.stageController.swapScene("auth", this.launchParams);
+                return true;
+            }
+            else
+            {
+                //　已经获取了access_token,access_secret,进入main-scene
+                return true
+            }
+         }
+         else
+         {
+            // 如果没找到相关数据库，就进入first-scene,开始xauth认证
+            this.controller.stageController.swapScene("auth", this.launchParams);
+            return true;
+         }
+    }.bind(this));
+    return true;
+}
+
 UploadAssistant.prototype.activate = function(event) {
     /* put in event handlers here that should only be in effect when this scene is active. For
        example, key handlers that are observing the document */
+      
+    this.checkAuthParams();
 };
 
 UploadAssistant.prototype.deactivate = function(event) {

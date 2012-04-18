@@ -13,8 +13,8 @@ function FirstAssistant(arg) {
 FirstAssistant.prototype.cbParsePutKind = function(future) {
     var result = future.result;
     if (result.returnValue === true)                   
-       Mojo.Log.info("Authorization putKind success");
-       /* 查询数据库，是否已经认证过用户名和密码 */
+        Mojo.Log.info("Authorization putKind success");
+        /* 查询数据库，是否已经认证过用户名和密码 */
         var fquery = {"from":"com.riderwoo.helloworld:1"};
         var libraries = MojoLoader.require({ name: "foundations" , version: "1.0"     });
         var DB = libraries["foundations"].Data.DB;
@@ -35,8 +35,8 @@ FirstAssistant.prototype.cbParsePutKind = function(future) {
                 else
                 {
                     // TODO　已经获取了access_token,access_secret,进入main-scene
-                    //FirstAssistant.prototype.uploadPicToFanfou("/media/internal/DCIM/100PALM/CIMG0001.jpg","");
-                    //this.controller.stageController.pushScene("main");
+                    // FirstAssistant.prototype.uploadPicToFanfou("/media/internal/DCIM/100PALM/CIMG0001.jpg","");
+                    // this.controller.stageController.swapScene("main");
                     this.controller.stageController.swapScene("upload", this.launchParams);
                     // this.controller.stageController.swapScene("auth");
                     return true;
@@ -71,7 +71,7 @@ FirstAssistant.prototype.checkAccessExist = function() {
         // var q = {"from":"com.riderwoo.helloworld:1"};
         // DB.del(q);
 
-        /* 向输入库中插入用户名密码类,并在创建成功后，检查用户名和密码 */
+        /* 向数据库中插入用户名密码类,并在创建成功后，检查用户名和密码 */
         var indexes = [{"name":"fanfou_username", 
                         "props":[
                                   //{"name":"fanfou_username"},
@@ -80,11 +80,6 @@ FirstAssistant.prototype.checkAccessExist = function() {
                                   {"name":"fanfou_access_secret"}]
                       }];
         DB.putKind("com.riderwoo.helloworld:1", "com.riderwoo.helloworld", indexes).then(this.cbParsePutKind.bind(this));
-    }
-    else
-    {  
-       result = future.exception;
-       Mojo.Log.info("Authorization putKind failure: Err code=" + result.errorCode + "Err message=" + result.message); 
     }
 }
 
@@ -151,13 +146,14 @@ FirstAssistant.prototype.setup = function() {
         spinning: true
     }
     this.controller.setupWidget('large-activity-spinner', this.spinnerLAttrs, this.spinnerModel);
-    this.checkInternetConnection();
+    
     //this.checkAccessExist();
 };
 
 FirstAssistant.prototype.activate = function(event) {
 	/* put in event handlers here that should only be in effect when this scene is active. For
 	   example, key handlers that are observing the document */
+	  this.checkInternetConnection();
 };
 
 FirstAssistant.prototype.deactivate = function(event) {
