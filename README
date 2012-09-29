@@ -1,19 +1,23 @@
-¡°WebOS·¹·ñ¿Í»§¶Ë¡±ÊÇWebOSÆ½Ì¨µÄÓÖÒ»¸ö·Ç¹Ù·½¿Í»§¶ËÈí¼ş£¬Ï£ÍûËıÄÜ¹»³ÉÎªÓÃ»§ÌåÑé×î°ôµÄ·¹·ñ¿Í»§¶ËÖ®Ò»¡£
-·¹·ñ(http://www.fanfou.com)ÊÇÒ»¸öÉç½»ÍøÕ¾¡£
-Ä¿Ç°Õâ¿îÈí¼şÈÔÔÚ¿ìËÙ¿ª·¢ÖĞ£¬ºÜ¶à¹¦ÄÜ»¹½ö½ö´¦ÔÚÉè¼Æ½×¶Î¡£Èç¹ûÄãÏë¼ÓÈëÎÒÃÇÒ»Æğ¿ª·¢£¬¿ÉÒÔÍ¨¹ıGmailÓÊÏä(sqbing)ÕÒµ½ÎÒ£¬»òÕßµ½ÎÒµÄ·¹·ñÖ÷Ò³ÁôÑÔ(http://www.fanfou.com/sqbing)¡£
+#WebOSé¥­å¦å®¢æˆ·ç«¯
+â€œWebOSé¥­å¦å®¢æˆ·ç«¯â€æ˜¯WebOSå¹³å°çš„åˆä¸€ä¸ªéå®˜æ–¹å®¢æˆ·ç«¯è½¯ä»¶ï¼Œå¸Œæœ›å¥¹èƒ½å¤Ÿæˆä¸ºç”¨æˆ·ä½“éªŒæœ€æ£’çš„é¥­å¦å®¢æˆ·ç«¯ä¹‹ä¸€ã€‚
+é¥­å¦(http://www.fanfou.com)æ˜¯ä¸€ä¸ªç¤¾äº¤ç½‘ç«™ã€‚
+ç›®å‰è¿™æ¬¾è½¯ä»¶ä»åœ¨å¿«é€Ÿå¼€å‘ä¸­ï¼Œå¾ˆå¤šåŠŸèƒ½è¿˜ä»…ä»…å¤„åœ¨è®¾è®¡é˜¶æ®µã€‚å¦‚æœä½ æƒ³åŠ å…¥æˆ‘ä»¬ä¸€èµ·å¼€å‘ï¼Œå¯ä»¥é€šè¿‡Gmailé‚®ç®±(sqbing)æ‰¾åˆ°æˆ‘ï¼Œæˆ–è€…åˆ°æˆ‘çš„é¥­å¦ä¸»é¡µç•™è¨€(http://www.fanfou.com/sqbing)ã€‚
 
 Fanfou Client For WebOS is yet another client for Fanfou unofficially. We hope it will be one of the best Fanfou client apps.
 Fanfou(http://www.fanfou.com) is a social website.
 It's still under development, and many functions are just in roadmap. If you wanna join us, contact me at Gmail(sqbing) or my fanfou http://www.fanfou.com/sqbing.
 
-DONE:
-1.XAUTHÈÏÖ¤
-2.¸üĞÂ×´Ì¬
-3.ÉÏ´«ÕÕÆ¬
-4.Í¨¹ıJust Type¸üĞÂ×´Ì¬
+#DONE:
+1. XAUTHè®¤è¯
+2. æ›´æ–°çŠ¶æ€
+3. ä¸Šä¼ ç…§ç‰‡
+4. é€šè¿‡Just Typeæ›´æ–°çŠ¶æ€
 
-TODO:
-0.App MenuÖĞµÄ¡°Ê×Ñ¡Ïî¡±
-1.¡°Ê×Ò³¡±scene
-2.¡°@¡±scene
-3.¡°Ë½ĞÅ¡±scene
+#TODO:
+0. App Menuä¸­çš„â€œé¦–é€‰é¡¹â€
+1. â€œé¦–é¡µâ€scene
+2. â€œ@â€scene
+3. â€œç§ä¿¡â€scene
+
+#å¼€å‘çŠ¶æ€
+å› ä¸ºæŸäº›åŸå› ï¼Œè¯¥é¡¹ç›®æš‚æ—¶åœæ»ã€‚
