@@ -5,8 +5,8 @@ function AuthAssistant(arg) {
        that needs the scene controller should be done in the setup function below. */
        this.launchParams = arg;
 }
-var consumer_token = "60648e4719285ec6fb437785e655bda5";
-var consumer_secret = "aed509928807eab4f1a615e4d422c724";
+var consumer_token = "input_your_consumer_token";
+var consumer_secret = "input_your_consumer_secret";
 AuthAssistant.prototype.getAccessParams = function(username, password)
 {
     // 首先删除数据库中的用户名和密码，如果有的话.
