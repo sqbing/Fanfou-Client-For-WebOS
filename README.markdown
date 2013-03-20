@@ -20,4 +20,6 @@ It's still under development, and many functions are just in roadmap. If you wan
 3. “私信”scene
 
 #开发状态
-因为某些原因，该项目暂时停滞。
+该项目暂时停滞，因为：
+1. 我懒
+2. 我的WebOS设备已经出二手了
